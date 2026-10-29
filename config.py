@@ -11,7 +11,7 @@ CHROMA_DIR = "data/chroma_db"
 
 # --- Embedding Model ---
 EMBEDDING_MODEL = "BAAI/bge-base-en-v1.5"
-EMBEDDING_DEVICE = "cuda"    # Switch to "cpu" if CUDA unavailable
+EMBEDDING_DEVICE = "cpu"    # Switch to "cpu" if CUDA unavailable
 
 # --- LLM via Groq ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
