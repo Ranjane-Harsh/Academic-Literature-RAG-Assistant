@@ -2,6 +2,7 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from core.embeddings import get_embedding_model
 import config
+import os
 
 def get_store() -> Chroma:
     return Chroma(
@@ -11,10 +12,19 @@ def get_store() -> Chroma:
 
 def add_documents(chunks: list[Document]) -> None:
     store = get_store()
-    store.add_documents(chunks)
 
-def similarity_search(query: str, top_k = None) -> list[Document]:
-    k = top_k or config.TOP_K
+    ids = []
+    for i, doc in enumerate(chunks):
+        source_name = os.path.basename(doc.metadata.get("source", "doc"))
+        page_num = doc.metadata.get("page", 0)
+        chunk_id = f"{source_name}_p{page_num}_c{i}"
+        ids.append(chunk_id)
+
+    store.add_documents(documents=chunks, ids = ids)
+    print(f" [Vector Store] Indexed {len(chunks)} with deterministic IDs")
+
+def similarity_search(query: str, top_k : int = None) -> list[Document]:
+    k = top_k or config.INITIAL_TOP_K  # Searching for top 15 candidates for retrival
     store = get_store()
     instruction = "Represent this sentence for searching relevant passages: "
     formatted_query = f"{instruction}{query}"
